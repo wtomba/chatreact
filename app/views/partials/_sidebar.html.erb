@@ -1,0 +1,19 @@
+<ul class="off-canvas-list">
+  <li><label>You</label></li>
+  <li>
+    <a href="#" class="profile-name" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false">
+      <% if user %>
+        <%= user.username %>
+      <% end %>
+    </a>
+    <ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true" tabindex="-1">
+      <li><a id="log-out" href="#">Logga ut</a></li>
+    </ul>
+  </li>
+  <li><label>Your people</label></li>
+  <% if user %>
+    <% user.users.each do |u| %>
+      <li><a href="#"><%= u.username %></a></li>
+    <% end %>
+  <% end %>
+</ul>

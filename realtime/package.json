@@ -1,0 +1,10 @@
+{
+  "name": "ReactTest",
+  "description": "Testing react.js",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "socket.io": "*",
+    "redis": "*"
+  }
+}

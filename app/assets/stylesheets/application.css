@@ -1,0 +1,170 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any styles
+ * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
+ * file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+ @keyframes pop-in {
+ 0% { opacity: 0;transform: scale(0.1); }
+ 100% { opacity: 1;transform: scale(1); }
+ }
+ @-webkit-keyframes pop-in {
+ 0% { opacity: 0;-webkit-transform: scale(0.1); }
+ 100% { opacity: 1;-webkit-transform: scale(1); }
+ }
+ @-moz-keyframes pop-in {
+ 0% { opacity: 0;-moz-transform: scale(0.1); }
+ 100% { opacity: 1;-moz-transform: scale(1); }
+ }
+
+ @keyframes pop-out {
+ 0% { opacity: 1;transform: scale(1); }
+ 100% { opacity: 0;transform: scale(0.1); }
+ }
+ @-webkit-keyframes pop-out {
+ 0% { opacity: 1;transform: scale(1); }
+ 100% { opacity: 0;transform: scale(0.1); }
+ }
+ @-moz-keyframe pop-out {
+ 0% { opacity: 1;transform: scale(1); }
+ 100% { opacity: 0;transform: scale(0.1); }
+ }
+
+ fieldset {
+   padding-bottom: 0;
+ }
+
+ textarea {
+   resize: vertical;
+ }
+
+ #submit {
+   margin-top: 1rem;
+   margin-bottom: 1rem;
+ }
+
+ #main-section {
+   line-height: 0;
+ }
+
+ #connections {
+   border-bottom: 1px dotted orange;
+ }
+
+.modal {
+  position: absolute;
+  left: 0;
+  top: 5rem;
+  right: 0;
+  z-index: 1005;
+  border-radius: 3px;
+  margin: 0 auto;
+  background-color: #FFFFFF;
+  padding: 1.66667rem;
+  border: solid 1px #666666;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+#modal-bg {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #000000;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1004;
+}
+
+.off-canvas-list {
+  font-weight: bold;
+  font-size: 12px;
+}
+  .off-canvas-list .profile-name {
+    border: none;
+    background: rgb(226, 146, 0);
+  }
+  .left-off-canvas-toggle, .right-off-canvas-toggle {
+    font-size: 1.8rem;
+    text-align: center;
+    padding: .5rem;
+    color: #FFF;
+  }
+
+ .f-dropdown {
+   background: rgb(32, 116, 144) !important;
+   border: none;
+   margin-left: 11px;
+ }
+ .f-dropdown li:hover, .f-dropdown li a:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgb(226, 146, 0);
+  }
+    .f-dropdown li a {
+      font-size: 12px;
+      color: #FFF !important;
+    }
+
+.transparent {
+  border:none;
+  background-color: transparent;
+}
+
+.message-enter {
+  -webkit-animation:pop-in 0.3s;
+  -moz-animation:pop-in 0.3s;
+  -ms-animation:pop-in 0.3s;
+}
+
+.message-enter.message-enter-active {
+  opacity: 1;
+}
+
+.message-leave {
+  -webkit-animation:pop-out 0.3s;
+  -moz-animation:pop-out 0.3s;
+  -ms-animation:pop-out 0.3s;
+}
+
+.message-leave.message-leave-active {
+  opacity: 0.01;
+}
+
+#messages {
+  min-height: 25rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+  #messages blockquote {
+    word-break: break-all;
+    border-left: 2px ridge #008CBA;
+  }
+    #messages blockquote.active {
+      border-color: rgb(255, 116, 0);
+    }
+    #messages blockquote span.author {
+      color: #008CBA;
+    }
+    #messages blockquote span.author.active {
+      font-weight: bold;
+      color: rgb(255, 116, 0);
+    }
+
+#attendees {
+}
+  #attendees .label {
+    margin: 0 0 1rem 0;
+    border-right: 1px dotted #FFF;
+  }
+    #attendees .label.active {
+      background-color: rgb(255, 116, 0);
+    }

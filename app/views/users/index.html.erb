@@ -1,0 +1,55 @@
+<div id="content" class="small-12 medium-6 large-4 large-offset-4 medium-offset-3 columns">
+  <div class="off-canvas-wrap" data-offcanvas>
+    <div class="inner-wrap">
+      <nav class="tab-bar">
+        <section class="left-small" style="display:none;">
+          <a class="left-off-canvas-toggle" href="#"><i class="fi-torsos-female-male"></i></a>
+        </section>
+
+        <section class="middle tab-bar-section">
+          <h1 class="title"></h1>
+        </section>
+
+        <section class="right-small" style="display:none;">
+          <a class="right-off-canvas-toggle" href="#"><i class="fi-comments"></i></a>
+        </section>
+      </nav>
+      <aside id="left-side-bar" class="left-off-canvas-menu">
+      </aside>
+
+      <aside id="right-side-bar" class="right-off-canvas-menu">
+      </aside>
+
+      <section id="main-section">
+        <!-- content goes here -->
+      </section>
+
+      <a class="exit-off-canvas"></a>
+
+    </div>
+  </div>
+</div>
+<script type="text/jsx">
+  var user = JSON.parse(localStorage.getItem('user'));
+  if (user && user.token) {
+    React.render(
+      <ChatBox url="/conversations" id="" />,
+      document.getElementById("main-section")
+    );
+  } else {
+    React.render(
+      <LoginForm />,
+      document.getElementById("main-section")
+    );
+  }
+
+  var io = io.connect("http://127.0.0.1:5001");
+  io.on("rt-change", function (message) {
+    $(document).trigger(message.resource);
+  });
+
+  $(".right-off-canvas-toggle").click(function () {
+    console.log("asd");
+    $("#right-side-bar > label").click();
+  });
+</script>
