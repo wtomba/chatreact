@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
     :foreign_key => "user_a_id",
     :association_foreign_key => "user_b_id")
   has_and_belongs_to_many :conversations
+  has_many :notifications
 
   attr_accessor :password
   before_save :encrypt_password

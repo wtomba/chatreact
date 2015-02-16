@@ -98,6 +98,9 @@
     padding: .5rem;
     color: #FFF;
   }
+  .right-off-canvas-menu li.active {
+    background: rgb(226, 146, 0);
+  }
 
  .f-dropdown {
    background: rgb(32, 116, 144) !important;

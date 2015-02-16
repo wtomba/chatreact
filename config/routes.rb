@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   post 'conversations' => 'api#create_conversation'
   get 'all_conversations' => 'api#get_conversations'
   get 'conversations(/:id)' => 'api#get_conversation'
+  delete 'conversations/:id' => 'api#leave_conversation'
   post 'conversations/:id' => 'api#add_message'
   delete 'messages' => 'api#delete_message'
 

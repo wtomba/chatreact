@@ -18,6 +18,7 @@
 //= require socket.io
 //= require modernizr
 //= require foundation.min
+//= require foundation.dropdown
 //= require foundation.offcanvas
 //= require fastclick
 //= require placeholder

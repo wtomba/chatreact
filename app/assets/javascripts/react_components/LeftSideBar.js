@@ -38,7 +38,8 @@ var LeftSideBar = React.createClass({
     e.preventDefault();
 
     localStorage.removeItem('user');
-    React.unmountComponentAtNode(document.getElementById("main-section"));
+    React.unmountComponentAtNode(document.getElementById("main-section"));    
+    React.unmountComponentAtNode(document.getElementById("right-side-bar"));
     $('.off-canvas-wrap').foundation('offcanvas', 'toggle', 'move-right');
     React.render(
       <LoginForm />,

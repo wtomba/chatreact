@@ -80,16 +80,20 @@ class ApiController < ApplicationController
   end
 
   def get_conversations
-    conversations = @current_user.conversations.order(:updated_at).reverse_order
+    conversations = @current_user.conversations.order('updated_at DESC')
 
-    render :json => { :conversations => conversations.as_json(:include => :users) }
+    render :json => { :conversations => conversations.as_json(:include => [:users, :notifications]) }
   end
 
   def get_conversation
     if params[:id]
       conversation = Conversation.find(params[:id])
     else
-      conversation = @current_user.conversations.order(:updated_at).reverse_order.first
+      conversation = @current_user.conversations.order('updated_at DESC').first
+    end
+
+    conversation.notifications.where(:user_id => @current_user.id).each do |n|
+      n.destroy
     end
 
     if conversation
@@ -97,6 +101,20 @@ class ApiController < ApplicationController
     else
       render :json => {:message => "No conversation"}
     end
+  end
+
+  def leave_conversation
+    conversation = Conversation.find(params[:id])
+
+    conversation.users.delete(@current_user)
+
+    if conversation.users.any?
+      conversation.touch
+    else
+      conversation.destroy
+    end
+
+    render :json => {:message => "success"}
   end
 
   def add_message
@@ -107,6 +125,17 @@ class ApiController < ApplicationController
     message.conversation = conversation
 
     if message.save
+      conversation.touch
+
+      conversation.users.each do |u|
+        if u != @current_user
+          notification = Notification.new
+          notification.user = u
+          notification.conversation = conversation
+
+          notification.save
+        end
+      end
       render :json => {:message => "success"}
     end
   end

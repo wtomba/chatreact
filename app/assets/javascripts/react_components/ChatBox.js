@@ -30,7 +30,6 @@ var ChatBox = React.createClass({
   componentWillUnmount: function () {
     $(document).off('message');
     React.unmountComponentAtNode(document.getElementById("left-side-bar"));
-    React.unmountComponentAtNode(document.getElementById("right-side-bar"));
   },
   loadMessagesFromServer: function () {
     var url = this.props.url;
@@ -223,20 +222,18 @@ var MessageForm = React.createClass({
   render: function () {
     return (
       <form className="commentForm" onSubmit={this.handleSubmit}>
-        <fieldset>
-          <div className="row">
-            <div className="text-field small-12 large-12 columns">
-              <label>Skriv ditt meddelande
-                <textarea placeholder="Din meddelande här" ref="text" required rows="3"></textarea>
-              </label>
-            </div>
+        <div className="row">
+          <div className="text-field small-12 large-12 columns">
+            <label>
+              <textarea placeholder="Din meddelande här" ref="text" required rows="3"></textarea>
+            </label>
           </div>
-          <div className="row">
-            <div className="small-12 large-12 columns">
-              <input id="submit" className="button tiny success right" type="submit" value="Skicka" />
-            </div>
+        </div>
+        <div className="row">
+          <div className="small-12 large-12 columns">
+            <input id="submit" className="button tiny success right" type="submit" value="Skicka" />
           </div>
-        </fieldset>
+        </div>
       </form>
     );
   }
