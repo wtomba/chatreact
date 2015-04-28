@@ -1,0 +1,19 @@
+var user = JSON.parse(localStorage.getItem('user'));
+if (user && user.token) {
+	React.render(
+		<ChatBox url="/conversations" />,
+		document.getElementById("main-section")
+	);
+
+	var io = io.connect("http://192.168.186.128:5001");
+	io.emit('join', { id: user.id });
+	io.on("rt-change", function (message) {
+		$(document).trigger(message.resource);
+	});
+	
+} else {
+	React.render(
+		<LoginForm />,
+		document.getElementById("main-section")
+	);
+}

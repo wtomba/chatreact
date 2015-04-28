@@ -5,6 +5,7 @@ var ChatBox = React.createClass({
     var user = JSON.parse(localStorage.getItem('user'));
     return {messages: [],
             conversation: {
+              id: "",
               users: []
             },
             user: user};
@@ -13,7 +14,6 @@ var ChatBox = React.createClass({
     $(".title").text("Chatta");
     $(".left-small").show();
     $(".right-small").show();
-    this.loadMessagesFromServer();
 
     React.render(
       <LeftSideBar />,
@@ -25,17 +25,30 @@ var ChatBox = React.createClass({
       document.getElementById("right-side-bar")
     );
 
+
+    $('#chat-textarea').keypress(function (e) {
+      e = e || event;
+      if(e.which === 13 && !e.shiftKey){
+        $('#commentForm #submit').trigger("click");
+        return false;
+      }
+    });
+    
+    this.loadMessagesFromServer();
     $(document).on('message', this.loadMessagesFromServer);
   },
   componentWillUnmount: function () {
     $(document).off('message');
     React.unmountComponentAtNode(document.getElementById("left-side-bar"));
+    React.unmountComponentAtNode(document.getElementById("right-side-bar"));
   },
-  loadMessagesFromServer: function () {
+  loadMessagesFromServer: function (e, id) {
     var url = this.props.url;
 
-    if (this.props.id) {
-      url += "/"+this.props.id;
+    if (id && id != "leave") {
+      url += "/"+ id;
+    } else if (this.state.conversation.id && id != "leave") {
+      url += "/"+ this.state.conversation.id;
     }
 
     $.ajax({
@@ -43,10 +56,13 @@ var ChatBox = React.createClass({
       dataType: 'json',
       success: function (data) {
         if (data.conversation) {
+          var div = document.getElementById("messages");
+
           this.setState({messages: data.messages,
-                          conversation: data.conversation});
-          $("#messages").animate({ scrollTop: $('#messages')[0].scrollHeight}, 500);
-          this.props.id = data.conversation.id;
+                          conversation: data.conversation}, function () {
+                            TweenLite.to(div, 1.5, {scrollTo: { y: div.scrollHeight }, ease: Circ.easeOut });
+                            $(document).trigger("user", [data.conversation.users]);
+                          });
         } else {
           this.setState({messages: [{
             user: {
@@ -54,9 +70,19 @@ var ChatBox = React.createClass({
             },
             text: "Starta en konversation genom att navigera till menyn uppe till vänster och välj sedan en vän att prata med.",
             created_at: Date.now(),
-          }]});
+          }], conversation: { id: "", users: []}}, function () {            
+                                            React.render(
+                                              <LeftSideBar />,
+                                              document.getElementById("left-side-bar")
+                                            );
 
-          $("#submit").attr('disabled', true);
+                                            React.render(
+                                              <RightSideBar />,
+                                              document.getElementById("right-side-bar")
+                                            );
+                                        }
+          );
+          $(document).trigger("user", []);
         }
       }.bind(this),
       error: function (xhr, status, err) {
@@ -67,9 +93,14 @@ var ChatBox = React.createClass({
       }.bind(this),
     });
   },
-  handleMessageSubmit: function (message) {
+  handleMessageSubmit: function (message, id) {
+    var url = this.props.url+"/" + this.state.conversation.id;
+
+    if (id) {
+      url = url+"/messages/"+id;
+    }
     $.ajax({
-      url: this.props.url+"/" +this.props.id,
+      url: url,
       dataType: 'json',
       type: 'POST',
       data: message,
@@ -103,7 +134,7 @@ var ChatBox = React.createClass({
   },
   render: function () {
     return (
-      <section role="main">
+      <section className="active-conversation" id={this.state.conversation.id}>
         <div className="row">
           <AttendeeList attendees={this.state.conversation.users} current_user={this.state.user} />
           <MessageList messages={this.state.messages} handleMessageRemove={this.handleMessageRemove} current_user={this.state.user} />
@@ -126,10 +157,29 @@ var MessageList = React.createClass({
 
     this.props.handleMessageRemove(messageToRemove);
   },
+  handleEdit: function (i, e) {
+    e.preventDefault();
+
+    var messageToEdit = this.props.messages[i];
+
+    if (!messageToEdit) {
+      return;
+    }
+
+    $(".edit-message-id").val(messageToEdit.id);
+    $("#chat-textarea").val(messageToEdit.text).focus();
+  },
   render: function () {
     var messageNodes = this.props.messages.map(function (message, i) {
       return (
-        <Message author={message.user} user={this.props.current_user} created_at={message.created_at} id={message.id} key={message.id} removeMessage={this.handleRemove.bind(this, i)}>
+        <Message  key={message.id}
+                  author={message.user} 
+                  user={this.props.current_user} 
+                  created_at={message.created_at}
+                  updated_at={message.updated_at}
+                  id={message.id} 
+                  removeMessage={this.handleRemove.bind(this, i)}
+                  editMessage={this.handleEdit.bind(this, i)}>
           {message.text}
         </Message>
       )
@@ -147,39 +197,94 @@ var MessageList = React.createClass({
 var Message = React.createClass({
 
   render: function () {
-    var date = new Date(this.props.created_at);
-    var formatted_date = (date.getMonth() + 1)+"/"+
-                            date.getDate()+"/"+
-                              date.getFullYear()+" - "+
-                              (date.getHours() > 9 ? date.getHours() : "0"+date.getHours())+":"+
-                                (date.getMinutes() > 9 ? date.getMinutes() : "0"+date.getMinutes());
+    var updated_at = new Date(this.props.updated_at),
+        created_at = new Date(this.props.created_at),
+        date = "";
+
+
+    date = <CreatedDate created={created_at} />
+
+    if (updated_at > created_at) {
+      date = <UpdatedDate updated={updated_at} />
+    }
 
     // Current user is owner of message
     if (this.props.user.username === this.props.author.username) {
       return (
-        <div>
-          <div data-alert className="alert-box transparent right">
-            <a href="#" className="close" onClick={this.props.removeMessage}><i className="fi-trash"></i></a>
-          </div>
-          <div data-alert className="alert-box transparent right">
-            <a href="#" className="close" ><i className="fi-widget"></i></a>
-          </div>
+        <div key={this.props.id} className="message">
           <blockquote className="active">
-            {this.props.children}
-            <cite><span className="author active">{this.props.author.username}</span> ({formatted_date})</cite>
+            <a href="#" className="edit-message right" data-options="align:left;" data-dropdown={"drop"+this.props.id} aria-controls={"drop"+this.props.id} aria-expanded="false"><i className="fi-widget"></i></a>
+            <ul id={"drop"+this.props.id} data-dropdown-content className="f-dropdown edit-message-dropdown" aria-hidden="true" tabIndex="-1">
+              <li><a href="#" className="edit" onClick={this.props.editMessage} ><i className="fi-pencil left"></i> Redigera</a></li>
+              <li><a href="#" className="remove" onClick={this.props.removeMessage}><i className="fi-trash left"></i> Ta bort</a></li>
+            </ul>        
+            <p>
+              <span dangerouslySetInnerHTML={{__html: linkify(this.props.children)}} />
+            </p>
+            <cite>
+              <span className="author active">{this.props.author.username}</span> 
+              <span className="right">{date}</span>
+            </cite>
           </blockquote>
         </div>
       );
     } else {
       return (
-        <div>
+        <div key={this.props.id} className="message">
           <blockquote>
-            {this.props.children}
-            <cite><span className="author">{this.props.author.username}</span> ({formatted_date})</cite>
+            <p>
+              <span dangerouslySetInnerHTML={{__html: linkify(this.props.children)}} />
+            </p>
+            <cite>
+              <span className="author">{this.props.author.username}</span> 
+              <span className="right">{date}</span>
+            </cite>
           </blockquote>
         </div>
       );
     }
+  }
+});
+
+var CreatedDate = React.createClass({
+  render: function () {
+    var date = "";
+    if( (new Date(this.props.created)).setHours(0,0,0,0) === (new Date()).setHours(0,0,0,0) ) {
+      date = (this.props.created.getHours() > 9 ? this.props.created.getHours() : "0"+this.props.created.getHours())+":"+
+                (this.props.created.getMinutes() > 9 ? this.props.created.getMinutes() : "0"+this.props.created.getMinutes())+":"+
+                  (this.props.created.getSeconds() > 9 ? this.props.created.getSeconds() : "0"+this.props.created.getSeconds());
+    } else {
+      date = (this.props.created.getMonth() + 1)+"/"+
+                    this.props.created.getDate()+"/"+
+                      this.props.created.getFullYear()+" - "+
+                        (this.props.created.getHours() > 9 ? this.props.created.getHours() : "0"+this.props.created.getHours())+":"+
+                          (this.props.created.getMinutes() > 9 ? this.props.created.getMinutes() : "0"+this.props.created.getMinutes())+":"+
+                            (this.props.created.getSeconds() > 9 ? this.props.created.getSeconds() : "0"+this.props.created.getSeconds());
+    }
+    return (
+      <span className="created-at"><i className="fi-calendar"></i> {date}</span>
+    );
+  }
+});
+
+var UpdatedDate = React.createClass({
+  render: function () {
+    var date = "";
+    if( (new Date(this.props.updated)).setHours(0,0,0,0) === (new Date()).setHours(0,0,0,0) ) {
+      date = (this.props.updated.getHours() > 9 ? this.props.updated.getHours() : "0"+this.props.updated.getHours())+":"+
+                (this.props.updated.getMinutes() > 9 ? this.props.updated.getMinutes() : "0"+this.props.updated.getMinutes())+":"+
+                  (this.props.updated.getSeconds() > 9 ? this.props.updated.getSeconds() : "0"+this.props.updated.getSeconds());
+    } else {
+      date = (this.props.updated.getMonth() + 1)+"/"+
+                    this.props.updated.getDate()+"/"+
+                      this.props.updated.getFullYear()+" - "+
+                        (this.props.updated.getHours() > 9 ? this.props.updated.getHours() : "0"+this.props.updated.getHours())+":"+
+                          (this.props.updated.getMinutes() > 9 ? this.props.updated.getMinutes() : "0"+this.props.updated.getMinutes())+":"+
+                            (this.props.updated.getSeconds() > 9 ? this.props.updated.getSeconds() : "0"+this.props.updated.getSeconds());
+    }
+    return (
+      <span className="updated-at"><i className="fi-pencil"></i> {date}</span>
+    );
   }
 });
 
@@ -189,11 +294,11 @@ var AttendeeList = React.createClass({
     var attendeeNodes = this.props.attendees.map(function (attendee, i) {
       if (current_user.username === attendee.username){
         return (
-          <span className="active label" key={attendee.id}>{attendee.username}</span>
+          <span className="active label attendees" id={attendee.id} key={attendee.id}>{attendee.username}</span>
         );
       } else {
         return (
-          <span className="label">{attendee.username}</span>
+          <span className="label attendees" id={attendee.id} key={attendee.id}>{attendee.username}</span>
         );
       }
     });
@@ -210,28 +315,31 @@ var AttendeeList = React.createClass({
 var MessageForm = React.createClass({
   handleSubmit: function (e) {
     e.preventDefault();
-    var text = this.refs.text.getDOMNode().value.trim();
+    var text = this.refs.text.getDOMNode().value.trim(),
+        id = this.refs.id.getDOMNode().value.trim();
 
     if (!text) {
       return;
     }
 
-    this.props.onMessageSubmit({text: text });
+    this.props.onMessageSubmit({text: text}, id);
     this.refs.text.getDOMNode().value = "";
+    this.refs.id.getDOMNode().value = "";
   },
   render: function () {
     return (
-      <form className="commentForm" onSubmit={this.handleSubmit}>
+      <form id="commentForm" className="commentForm" onSubmit={this.handleSubmit}>
+        <input name="edit-message" ref="id" className="edit-message-id" type="hidden" value="" />
         <div className="row">
           <div className="text-field small-12 large-12 columns">
             <label>
-              <textarea placeholder="Din meddelande här" ref="text" required rows="3"></textarea>
+              <textarea placeholder="Din meddelande här" ref="text" id="chat-textarea" required rows="3"></textarea>
             </label>
           </div>
         </div>
         <div className="row">
           <div className="small-12 large-12 columns">
-            <input id="submit" className="button tiny success right" type="submit" value="Skicka" />
+            <input id="submit" className="button small success right" type="submit" value="Skicka" />
           </div>
         </div>
       </form>

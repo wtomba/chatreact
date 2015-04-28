@@ -5,9 +5,12 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'users#index'
 
+  post 'register' => 'api#register'
   post 'login' => 'api#login'
+  get 'toggle_sound' => 'api#toggle_sound'
 
   get 'users' => 'api#users'
+  get 'users/query/:username' => 'api#query_users'
   post 'users/connection' => 'api#add_user_connection'
   delete 'users/connection' => 'api#delete_user_connection'
 
@@ -18,10 +21,13 @@ Rails.application.routes.draw do
 
 
   post 'conversations' => 'api#create_conversation'
+  post 'conversations/:conversation_id/invite_person/' => 'api#invite_person'
+  post 'conversations/:id/change_name' => 'api#change_conversation_name'
   get 'all_conversations' => 'api#get_conversations'
   get 'conversations(/:id)' => 'api#get_conversation'
   delete 'conversations/:id' => 'api#leave_conversation'
   post 'conversations/:id' => 'api#add_message'
+  post 'conversations/:id/messages/:message_id' => 'api#edit_message'
   delete 'messages' => 'api#delete_message'
 
   # Example of regular route:

@@ -14,6 +14,7 @@
 ActiveRecord::Schema.define(version: 20150216144153) do
 
   create_table "conversations", force: :cascade do |t|
+    t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -57,8 +58,9 @@ ActiveRecord::Schema.define(version: 20150216144153) do
     t.string   "password_hash"
     t.string   "password_salt"
     t.string   "access_token"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.boolean  "notification_sounds", default: true
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
   end
 
 end
