@@ -27,8 +27,8 @@ var LoginForm = React.createClass({
             <ChatBox url="/conversations" conversation_id="" />,
             document.getElementById("main-section")
           );
-
-          var io = window.io.connect("http://192.168.186.128:5001");
+          var io = io.connect("http://85.230.152.217:5001");
+          // var io = window.io.connect("http://192.168.186.128:5001");
           io.emit('join', { id: data.id });
           io.on("rt-change", function (message) {
             $(document).trigger(message.resource);
