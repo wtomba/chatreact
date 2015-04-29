@@ -291,8 +291,8 @@ var ConnectionList = React.createClass({
       if (attendee_ids.indexOf(user.id) > -1) {
         return (
           <li key={user.id}>
-            <a href="#" data-dropdown={"drop"+user.id} aria-controls={"drop"+user.id} aria-expanded="false">{user.username}</a>
-            <ul id={"drop"+user.id} data-dropdown-content className="f-dropdown" aria-hidden="true" tabIndex="-1">
+            <a href="#" data-dropdown={"dropconnection"+user.id} aria-controls={"dropconnection"+user.id} aria-expanded="false">{user.username}</a>
+            <ul id={"dropconnection"+user.id} data-dropdown-content className="f-dropdown" aria-hidden="true" tabIndex="-1">
               <li><a href="#" onClick={this.handleCreateConversationClick.bind(this, i)}>Skapa konversation</a></li>
               <li><a href="#" onClick={this.handleRemoveClick.bind(this, i)}>Ta bort</a></li>
             </ul>
@@ -301,11 +301,11 @@ var ConnectionList = React.createClass({
       } else {
         return (
           <li key={user.id}>
-            <a className="draggable" id={user.id} href="#" data-dropdown={"drop"+user.id} aria-controls={"drop"+user.id} aria-expanded="false">
+            <a className="draggable" id={user.id} href="#" data-dropdown={"dropconnection"+user.id} aria-controls={"dropconnection"+user.id} aria-expanded="false">
               <i className="fi-arrows-out"></i>
               {user.username}
             </a>
-            <ul id={"drop"+user.id} data-dropdown-content className="f-dropdown" aria-hidden="true" tabIndex="-1">
+            <ul id={"dropconnection"+user.id} data-dropdown-content className="f-dropdown" aria-hidden="true" tabIndex="-1">
               <li><a href="#" onClick={this.handleCreateConversationClick.bind(this, i)}>Skapa konversation</a></li>
               <li><a href="#" onClick={this.handleInviteClick.bind(this, i)}>Bjud in till konversation</a></li>
               <li><a href="#" onClick={this.handleRemoveClick.bind(this, i)}>Ta bort</a></li>

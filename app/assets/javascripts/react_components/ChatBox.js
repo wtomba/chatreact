@@ -213,8 +213,8 @@ var Message = React.createClass({
       return (
         <div key={this.props.id} className="message">
           <blockquote className="active">
-            <a href="#" className="edit-message right" data-options="align:left;" data-dropdown={"drop"+this.props.id} aria-controls={"drop"+this.props.id} aria-expanded="false"><i className="fi-widget"></i></a>
-            <ul id={"drop"+this.props.id} data-dropdown-content className="f-dropdown edit-message-dropdown" aria-hidden="true" tabIndex="-1">
+            <a href="#" className="edit-message right" data-options="align:left;" data-dropdown={"dropmessage"+this.props.id} aria-controls={"dropmessage"+this.props.id} aria-expanded="false"><i className="fi-widget"></i></a>
+            <ul id={"dropmessage"+this.props.id} data-dropdown-content className="f-dropdown edit-message-dropdown" aria-hidden="true" tabIndex="-1">
               <li><a href="#" className="edit" onClick={this.props.editMessage} ><i className="fi-pencil left"></i> Redigera</a></li>
               <li><a href="#" className="remove" onClick={this.props.removeMessage}><i className="fi-trash left"></i> Ta bort</a></li>
             </ul>        
