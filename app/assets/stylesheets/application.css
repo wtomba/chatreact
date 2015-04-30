@@ -227,8 +227,8 @@
 }
 
 #messages {
-  min-height: 80vh;
-  max-height: 80vh;
+  min-height: 65vh;
+  max-height: 65vh;
   overflow-y: auto;
   overflow-x: hidden;
 }
