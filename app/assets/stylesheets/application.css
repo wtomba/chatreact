@@ -338,7 +338,6 @@
 .commentForm {
   min-height: 30vh;
   max-height: 30vh;
-  padding-right: 1.2rem;
 }
   .commentForm textarea:focus {
     border-color: #008CBA;
